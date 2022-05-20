@@ -1,0 +1,476 @@
+SC1- guest user could register with valid data successfully
+
+1- Navigate to https://demo.nopcommerce.com/ 3
+
+2- Click on Register Tab
+
+3- Fill “Your Personal Details” fields
+3.1- Click on any Gender Option
+3.2- Fill First Name
+3.3- Fill Last Name
+3.4- Select Day
+3.5- Select Month
+3.6- Select Year
+3.7- Enter any email e.x: automation@gmail.com - testing@example.com - etc
+
+Notes:
+
+about Select Day, Month, Year
+you don’t have to click on the dropdown list to select any option inside
+Example: you don’t have to click on this element select[name=“DateOfBirthDay”] to select day 20
+you just need to click directly on option[value=“20”]
+samething for Month & Year
+4- Fill “Company Details” field
+4.1- Enter any company name like “Automation Company”
+
+Note: No need to do anything with “Newsletter” just leave it as it’s
+
+5- Fill “Your Password” fields
+5.1- Enter any password like “P@ssw0rd”
+5.2- Enter same password in Confirm password field “P@ssw0rd”
+
+6- Click on REGISTER button
+
+7- Use soft assertion to verify the following
+7.1- Success message is displayed “Your registration completed”
+7.2- the color of this message is green rgba(76, 177, 124, 1)
+Note: we need to get the “color” not “background-color” using getCssValue command which is already explained in lesson 3
+
+
+
+
+
+SC2- guest user could Login with valid credentials
+
+1- Navigate to https://demo.nopcommerce.com/ 5
+
+2- Click on “Log in” Tab
+
+3- Enter valid Email & Password
+You should pass parameters from Feature File in this step which is already explained in Cucumber Chapter
+
+4- Click on LOG IN button
+
+5- Use soft assertion to verify the following
+5.1- getCurrentUrl and verify it equals https://demo.nopcommerce.com/ 5
+Note: It’s better to use assertEqual not assertTrue
+5.2- “My account” tab isDisplayed
+
+
+
+
+SC3- guest user could switch between currencies [$, €]
+
+1- Navigate to https://demo.nopcommerce.com/ 4
+
+2- Select “Euro” from currency dropdown list
+Note: that this list is Static dropdown list
+
+Remember the difference between static and dynaimc dropdown list
+
+Static dropdown list: is the list which its tagName is select
+Example: currency dropdown list in this test case
+
+Dynamic dropdown list: is the list which its tagName is different than select
+Example: go to home page https://demo.nopcommerce.com/ 4 and check “Computers” list you will find that its tagName is ul[class=“sublist first-level”]
+
+Now we will discuss how to handle static dropdown list in this test case and we will discuss dynamic dropdown list later
+
+There are two methods to handle static dropdown list
+First Method (the simple way):
+you don’t have to click on the dropdown list to select any option inside
+Example: you don’t have to click on currency dropdown list
+you just need to click directly on Euro option
+
+Second Method:
+using Select class inside selenium and in this method you will need to locate dropdown list unlike the first method as shown in example below
+
+Example:
+
+import org.openqa.selenium.support.ui.Select;
+
+Select select = new Select(driver.findElement(By.name(“customerCurrency”)));
+// Select an based upon the 
+
+
+
+
+
+
+
+SC4
+1- click on search field in Home page
+
+2- search for any product like “Apple”
+You should pass parameter from Feature File in this step which is already explained in Cucumber Chapter
+
+3- Use soft assertion to verify the following
+
+3.1- url contains nopCommerce demo store. Search 2
+it’s prefered to use assertTrue not assertEqual
+
+3.2- results size is more than zero
+in this step you need to count number of search results using findElements not findElement like this
+int size = driver.findElements(By.cssSelector("")).size();
+soft.assertTrue(size > 0);
+don't forget assertAll()
+Note that the commands used with findElement is different that the commands used with findElements
+findElement >> click(), sendKeys(""), isDisplayed()
+findElements >> size(), get(), isEmpty()
+
+===================================================================================
+
+Scenario: user could search using sku
+
+You need to add another scenario inside the same feature file for searching with sku
+sku simply means serial number of the product
+Example: open this link https://demo.nopcommerce.com/apple-macbook-pro-13-inch 1 you will find sku is “AP_MBP_13”
+you just need to search with sku instead of product name and follow the same steps
+So there’s nothing new in this test case but just to know sku meaning for your experience knowledge not more
+
+
+
+
+
+
+
+
+
+
+
+SC5
+1- user hover category and select subcategory
+
+This is the code that you need to do to learn how to hover on and element using Actions class in selenium
+	
+// you should import this Actions class from Selenium first
+import org.openqa.selenium.interactions.Actions;
+
+// Note: String should be on the level of the class not the level of one method
+String subCategoryName;
+
+@When("user hover category and select subcategory")
+public void user_hover_category() throws InterruptedException {
+
+Actions action = new Actions(Hooks.driver);
+// hover on "Computers"
+WebElement computers = Hooks.driver.findElement(By.cssSelector("ul[class=\"top-menu notmobile\"] a[href=\"/computers\"]"));
+action.moveToElement(computers).perform();
+Thread.sleep(1000);
+
+// getText() of subCategory before click on it
+WebElement desktops = Hooks.driver.findElement(By.cssSelector("ul[class=\"top-menu notmobile\"] a[href=\"/desktops\"]"));
+subCategoryName = desktops.getText().toLowerCase().trim();		// this will change "Desktops " to "desktops"
+System.out.println(subCategoryName);		
+
+// click on "Desktops"
+desktops.click();
+
+2- use hard assertion to do the following
+2.1- getText for this element div[class="page-title"] and make it lower case using  	.toLowerCase()
+2.2- Compare between the text and the String you get it from the previous step subCategoryName
+
+In this test case you will learn how to
+* define variable on the level of the class
+* The purpose of using toLowerCase() and trim() methods, they are commonly used to verify a lot of similar test cases
+
+=====================================================================================
+How to automate this test case in advanced method
+Note: it’s not mandatory to do the advanced method in the project, it’s just to learn something new in Selenium course
+
+1- count number of cateogries and save it inside variable like >> int categoriesCount
+Note: they are 7 but more categories could be added in the future so it’s better to count them everytime you run automation
+
+2- select random number between 0 and categories count and save it inside variable like >> int categoryNum
+
+3- Hover on the category using findElements and get(categoryNum)
+
+** Run the test case more than one time and make sure your code is selecting different category everytime
+
+After hover on the category, you need to check if this category contains subCategories or not
+
+so How to do this?
+
+4- you need to count number of subCategories under selected category
+
+if counting is zero >> which means no subCategories to click on, so you need to click on the category itself and getText for Category option
+else which means there are subCategories under this category and you need to click on random one of those subCategories and getText for subCategory option
+
+Remember: hover is an action and click is different action
+Example: if you only hover on “Computers” category >> this will only show subCategories under it but it will not open nopCommerce demo store. Computers
+to open it you should click on it
+
+
+
+
+
+
+
+
+SC6
+What do you need to test in this feature?
+you will find two sliders when you open home page https://demo.nopcommerce.com/
+First slider contains Nokia Lumia 1020
+Second slider contains iPhone
+
+you need to automate two scenarios
+Scenario 1: first slider is clickable on home page
+Scenario 2: second slider is clickable on home page
+
+in scenario 1, it’s expected when click on first slider to direct user to this url nopCommerce demo store. Nokia Lumia 1020 2
+but the actual it’s not so we could consider this is a bug and automation test scenario should failed when compare between the actual and expected result
+
+in scenario 2, it’s expected when click on second slider to direct user to this url https://demo.nopcommerce.com/iphone-6 1
+but the actual it’s not so we could consider this is a bug and automation test scenario should failed when compare between the actual and expected result
+
+What you will learn?
+
+Each scenario will be executed on two steps
+Step 1: click on slider
+In this step you will learn new technique of how to locate two sliders using one web element
+(findElement) by passing parameters to your pom method
+
+Step 2: assert that relative product detail page is opened and url is changed
+In this step you will learn explicit wait conditions in selenium for the first time and will understand the main differences between implicit, explicit wait
+
+Let’s start with Step 1
+
+The main idea is that you could locate first & second sliders with only one locator in pom design pattern like this
+
+under pages package you could add this method under any class like this
+public class P03_homePage {
+public WebElement sliders(String num)
+{
+return Hooks.driver.findElement(By.cssSelector(“a[class=“nivo-imageLink”]:nth-child(”+num+")"));
+}
+}
+
+in your stepDefinition you could call sliders method and set num with “1” to click on the first slider
+e.x
+
+P03_homePage home = new P03_homePage();
+home.sliders(“1”).click();
+
+Now you may have this question, why should I do it like this?
+Answer: imagine you are having around 10 sliders, are you going to create locator for each one!!
+moreover, what if the developer changes the locator on all the sliders, you will have to do this changes on the 10 locators
+So it’s better to locate all the sliders with one locator and use numbering to choose which one you need to click on
+
+Step 2
+
+After click on the first slider you need to assert that the url is changed to nopCommerce demo store. Nokia Lumia 1020 2
+which mean that product detail page for “Nokia Lumia 1020” is opened.
+Remember that this scenario will fail because clicking on slider is not working as we mentioned above
+
+you could do it the easy way like this
+Assert.assertTrue(Hooks.driver.getCurrentUrl().contains(“nopCommerce demo store. Nokia Lumia 1020 2”));
+
+another Method: you could do it in another way using explicit wait like this
+
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+
+@Then("relative product for first slider is displayed")
+public void first_product_details_opened()
+{
+	// To create explicit wait condition, you need to create new object from WebDriverWait class then call your expected conditions as shown below
+    WebDriverWait wait = new WebDriverWait(Hooks.driver,10);
+  boolean check =  wait.until(ExpectedConditions.urlContains("https://demo.nopcommerce.com/nokia-lumia-1020"));
+  Assert.assertTrue(check);
+
+}
+
+Why do we need to wait until the url is changed?
+because sometimes the driver get the url before the new page is completely loading with the new url
+So it’s prefered to give your page the time needed to load and show the url of the new page
+
+What’s the main differences between implicit & explicit wait?
+
+First difference:
+implicitlyWait has only one condition which is waiting until the element is exist in DOM Page
+but explicitlyWait has multiple conditions unlike implicitlyWait
+
+There are too many conditions in explicitlyWait and those are the most common conditions
+	ExpectedConditions.elementToBeClickable 	// to check if element is clickable or not
+	ExpectedConditions.visibilityOf				// to check if element is visible on the UI Page or not
+	ExpectedConditions.numberOfWindowsToBe		// to count number of tabs opened
+	ExpectedConditions.urlContains				// wait until url contains 
+
+Second difference:
+* implicitlyWait is a global wait and applied to all elements on the webpage.
+global means it’s configured one time in Hooks class under @Before annotation
+
+* explicitlyWait is not a global wait and applied to a particular scenario.
+Now it’s clear why couldn’t we depend on implicitlyWait to wait for the new url
+because implicitlyWait doesn’t contain condition like this but it’s explicitlyWait conditions
+Remember implicitlyWait has only one condition which is waiting until the element is exist in DOM Page
+you will follow the same way in scenario 2.
+Note that this time you need to click on the second slider by setting num with “2”
+home.sliders(“2”).click();
+
+and your expected result will be https://demo.nopcommerce.com/iphone-6 1 instead of nopCommerce demo store. Nokia Lumia 1020 2
+Remember that this scenario will fail because clicking on slider is not working as we mentioned above
+
+
+
+
+
+
+
+
+
+
+
+SC7
+What do you need to test in this feature?
+- go to https://demo.nopcommerce.com/
+- you will find “Follow us” links at the end of the page
+- you need to create scenario for each button to make sure it works properly
+Scenario 1: user opens facebook link
+Scenario 2: user opens twitter link
+
+	Scenario 3: user opens rss link
+
+	Scenario 4: user opens youtube link
+Note: Scenario 3 will failed beacuse the link doesn’t open a valid url
+actual result is nopCommerce demo store: News 1
+however expected result should be nopCommerce demo store. New online store is open! 1
+
+What you will learn?
+
+you will learn How to handle multiple windows in Selenium using getWindowHandles() method
+
+for example if you have (tab 0 , tab 1)
+you will learn how to switch between the two tabs and how to close tab 1 and get back to tab 0 and so on
+
+Let’s take Scenario 1
+
+Step 1: After opening https://demo.nopcommerce.com/ you will simply click on facebook icon
+Note: in this website, you don’t have to scroll down to the end of the page to click on facebook icon which make your job easier
+
+Step 2:
+2.1- It’s prefered to start your method by waiting around 2 seconds
+Thread.sleep(2000)
+
+Why?
+to give opportunity to the driver to open the second tab after click on facebook icon from the previous step
+
+Now you have 2 tabs 
+tab 0 >>  https://demo.nopcommerce.com/
+tab 1 >> https://www.facebook.com/nopCommerce
+
+2.2- you should import 
+import java.util.ArrayList;
+and create ArrayList to save Hooks.driver.getWindowHandles() inside	
+ArrayList<String> Tabs = new ArrayList<>(Hooks.driver.getWindowHandles());
+
+2.3- you need to switch to tab 1 which contains this url  https://www.facebook.com/nopCommerce
+    driver.switchTo().window(Tabs.get(1));
+
+2.4- use hard assert to veify that current url is equal to https://www.facebook.com/nopCommerce 
+	Assert.assertEquals(Hooks.driver.getCurrentUrl(),"https://www.facebook.com/nopCommerce");
+
+2.5- after that you need to close your current tab and get back to tab 0
+    driver.close();
+    driver.switchTo().window(Tabs.get(0));
+
+Note: we are using here driver.close() not driver.quit()
+if you want to close only one tab without closing the whole browser >> you should use driver.close()
+if you want to close all tabs and the whole browser >> you should use driver.quit()
+
+So the whole code will be like this
+
+public void windowHandler() throws InterruptedException {
+
+Thread.sleep(2000);
+Tabs = new ArrayList<>(driver.getWindowHandles());
+driver.switchTo().window(Tabs.get(1));
+
+System.out.println(driver.getCurrentUrl());
+Assert.assertEquals(driver.getCurrentUrl(),"https://www.facebook.com/nopCommerce");
+
+// that's because we need to only close tab 1
+driver.close();
+
+driver.switchTo().window(Tabs.get(0));
+System.out.println(driver.getCurrentUrl());
+
+// that's because we need to close the whole browser after finishing all the steps as we used to do before    
+driver.quit();
+
+You will implement Scenario 2, 3, 4 the same way
+
+Don’t forget that scenario 3 will be failed because it will not open the link in new tab
+moreover your expected result should be “nopCommerce demo store. New online store is open! 1”
+however the actual result is “nopCommerce demo store: News 1”
+
+How to automate this test case in advanced method
+Note: it’s not mandatory to do the advanced method in the project, it’s just to learn something new in Selenium course
+
+Step 1: as we mentioned before that you don’t have to scroll down in this case to click on followUs links
+but let’s pretend if you have to do scroll in similar cases, how to scroll to an element?
+
+You could it using Class inside Selenium called JavascriptExecutor
+1.1- you need to import this first
+import org.openqa.selenium.JavascriptExecutor;
+
+1.2- Create new object of this class and scroll to the desired element on that way
+
+JavascriptExecutor js = (JavascriptExecutor) driver;
+// Note: first input is String and second input is WebElement which is locating facebook
+js.executeScript("arguments[0].scrollIntoView();",Hooks.driver.findElement(By.className("facebook")));
+
+
+Step 2: from feature file, you will pass the link type as a parameter
+and in your step definition, you will do Switch Statements to check which url you need to verify depending on the parameter value from feature file
+
+example
+
+Scenario: user opens facebook link
+When user opens facebook link
+Then “facebook” is opened in new tab
+
+@Then("^\"([^\"]*)\" is opened in new tab$")
+public void facebook_new_tab(String linkType)
+{
+Thread.sleep(2000);
+ArrayList<String> Tabs = new ArrayList<>(Hooks.driver.getWindowHandles());
+driver.switchTo().window(Tabs.get(1));
+
+System.out.println(Hooks.driver.getCurrentUrl());
+
+switch (linkType) {
+
+case "facebook":
+ Assert.assertEquals(Hooks.driver.getCurrentUrl(),"https://www.facebook.com/nopCommerce");
+break;
+
+case "twitter":
+ Assert.assertEquals(Hooks.driver.getCurrentUrl(),"https://twitter.com/nopCommerce");
+break;
+
+case "rss":
+ Assert.assertEquals(Hooks.driver.getCurrentUrl(),"https://demo.nopcommerce.com/new-online-store-is-open");
+break;
+
+case "youtube":
+ Assert.assertEquals(Hooks.driver.getCurrentUrl(),"https://www.youtube.com/user/nopCommerce");
+break;
+
+    }
+
+// that's because we need to only close tab 1
+driver.close();
+
+driver.switchTo().window(Tabs.get(0));
+System.out.println(driver.getCurrentUrl());
+
+// that's because we need to close the whole browser after finishing all the steps as we used to do before    
+driver.quit();
+
+}
+
+
+
+
+ 
